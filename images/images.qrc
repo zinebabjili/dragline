@@ -1,0 +1,7 @@
+<RCC>
+  <qresource prefix="newPrefix">
+    <file>pillioty logo.png</file>
+    <file>logo ocp.png</file>
+    <file>angle3.png</file>
+  </qresource>
+</RCC>
