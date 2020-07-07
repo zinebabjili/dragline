@@ -173,8 +173,9 @@ class Login(object):
     def changePage(self):
         self.data = get_emps_by_password(str(self.displayText()))
         if self.data != None:
-            self.window = QtWidgets.QWidget()  # depend de page
             self.display.setText('')
+            window.hide()
+            self.window = QtWidgets.QWidget()
             self.ui = Dragline(data=self.data)
             self.ui.setupUi(self.window)
             self.window.show()

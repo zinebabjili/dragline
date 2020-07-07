@@ -12,7 +12,9 @@ from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QTableWidget, QGridLayout,
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from controllers.timeCtrl import Controller
+from files.columnName import getNumColName
 from gui.analog import AnalogGaugeWidget
+
 
 
 class Dragline(object):
@@ -306,55 +308,43 @@ class Dragline(object):
     def getDR(self):
         wb = openpyxl.load_workbook(r'../files/Data IHM.xlsx')
         sheet = wb.active
-        max_col = sheet.max_column
-        min_col = sheet.min_column
         max_row = sheet.max_row
         min_row = sheet.min_row
-        # Loop all columns name
-        for i in range(min_col, max_col + 1):
-            v = sheet.cell(row=min_row, column=i)
-            m = str(v.value)
-            if m == "D_R":
-                for j in range(min_row + 1, max_row + 1):
-                    cell = sheet.cell(row=j, column=i)
-                    r = cell.value
-                    if r is not None:
-                        self.lcdDistanceRestante.display(str(r) + " pas")
-                        QApplication.processEvents()
-                        time.sleep(1)
+        i = getNumColName("D_R")
+        for j in range(min_row + 1, max_row + 1):
+            cell = sheet.cell(row=j, column=i)
+            r = cell.value
+            if r is not None:
+                self.lcdDistanceRestante.display(str(r) + " pas")
+                QApplication.processEvents()
+                time.sleep(1)
 
 
     def getDraglinePosition(self):
         wb = openpyxl.load_workbook(r'../files/Data IHM.xlsx')
         sheet = wb.active
-        max_col = sheet.max_column
-        min_col = sheet.min_column
         max_row = sheet.max_row
         min_row = sheet.min_row
-        # Loop all columns name
-        for i in range(min_col, max_col + 1):
-            v = sheet.cell(row=min_row, column=i)
-            m = str(v.value)
-            if m == "A_D":
-                for j in range(min_row + 1, max_row + 1):
-                    cell = sheet.cell(row=j, column=i)
-                    r = cell.value
-                    if r is not None:
-                        self.lcdCurrentAngleDragline.display(r)
-                        self.analogLeft.update_value(r)
-                        if r < 90:
-                            self.lcdCurrentAngleDragline.setStyleSheet("""QLCDNumber { 
-                                                                            border-radius: 10px;
-                                                                            background-color: rgb(142, 13, 20);
-                                                                            color: white; }""")
-                        else:
-                            self.lcdCurrentAngleDragline.setStyleSheet("""QLCDNumber { 
-                                                                            border-radius: 10px;
-                                                                            background-color: rgb(57, 147, 15); 
-                                                                            color: yellow;}""")
-                        self.lcdAngleRestante.display(90 - r)
-                        QApplication.processEvents()
-                        time.sleep(1)
+        i = getNumColName("A_D")
+        for j in range(min_row + 1, max_row + 1):
+            cell = sheet.cell(row=j, column=i)
+            r = cell.value
+            if r is not None:
+                self.lcdCurrentAngleDragline.display(r)
+                self.analogLeft.update_value(r)
+                if r < 90:
+                    self.lcdCurrentAngleDragline.setStyleSheet("""QLCDNumber { 
+                                                                    border-radius: 10px;
+                                                                    background-color: rgb(142, 13, 20);
+                                                                    color: white; }""")
+                else:
+                    self.lcdCurrentAngleDragline.setStyleSheet("""QLCDNumber { 
+                                                                    border-radius: 10px;
+                                                                    background-color: rgb(57, 147, 15); 
+                                                                    color: yellow;}""")
+                self.lcdAngleRestante.display(90 - r)
+                QApplication.processEvents()
+                time.sleep(1)
 
 
     def getArrowPosition(self, poste):
@@ -362,74 +352,65 @@ class Dragline(object):
         sheet = wb.active
         somme = 0
         som = 0
-        max_col = sheet.max_column
-        min_col = sheet.min_column
         max_row = sheet.max_row
         min_row = sheet.min_row
-        # Loop all columns name
-        for i in range(min_col, max_col + 1):
-            v = sheet.cell(row=min_row, column=i)
-            m = str(v.value)
-            if m == "A_F":
-                for k in range(min_col, max_col + 1):
-                    l = sheet.cell(row=min_row, column=k)
-                    s = str(l.value)
-                    if s == "V_R":
-                        for j in range(min_row + 1, max_row + 1):
-                            cellAm = sheet.cell(row=j, column=i)
-                            cellVr = sheet.cell(row=j, column=k)
-                            a = cellAm.value
-                            r = cellVr.value
-                            if a is not None:
-                                self.lcdCurrentAngleFleche.display(a)
-                                self.analogRight.update_value(a)
-                                if 70 < a < 110:
-                                    self.lcdCurrentAngleFleche.setStyleSheet("""QLCDNumber { 
-                                                            background-color: rgb(142, 13, 20);  
-                                                            border-radius: 10px;
-                                                            color: white; }""")
-                                else:
-                                    self.lcdCurrentAngleFleche.setStyleSheet("""QLCDNumber { 
-                                                            border-radius: 10px;
-                                                            background-color: rgb(57, 147, 15);
-                                                            color: yellow; }""")
-                                somme = somme + a
-                                moy = somme / (k - 1)
-                                self.lcdAngleMoyenne.display(moy)
-                                self.itemAngleMoyenne = QTableWidgetItem(str(moy))
-                                self.itemAngleMoyenne.setTextAlignment(Qt.AlignCenter)
-                                self.itemAngleMoyenne.setFlags(Qt.ItemIsSelectable)
-                                if poste == 3:
-                                    self.table.setItem(0, 2, self.itemAngleMoyenne)
-                                elif poste == 2:
-                                    self.table.setItem(2, 2, self.itemAngleMoyenne)
-                                else:
-                                    self.table.setItem(1, 2, self.itemAngleMoyenne)
+        i = getNumColName("A_F")
+        k = getNumColName("V_R")
+        for j in range(min_row + 1, max_row + 1):
+            cellAm = sheet.cell(row=j, column=i)
+            cellVr = sheet.cell(row=j, column=k)
+            a = cellAm.value
+            r = cellVr.value
+            if a is not None:
+                self.lcdCurrentAngleFleche.display(a)
+                self.analogRight.update_value(a)
+                if 70 < a < 110:
+                    self.lcdCurrentAngleFleche.setStyleSheet("""QLCDNumber { 
+                                            background-color: rgb(142, 13, 20);  
+                                            border-radius: 10px;
+                                            color: white; }""")
+                else:
+                    self.lcdCurrentAngleFleche.setStyleSheet("""QLCDNumber { 
+                                            border-radius: 10px;
+                                            background-color: rgb(57, 147, 15);
+                                            color: yellow; }""")
+                somme = somme + a
+                moy = somme / (k - 1)
+                self.lcdAngleMoyenne.display(moy)
+                self.itemAngleMoyenne = QTableWidgetItem(str(moy))
+                self.itemAngleMoyenne.setTextAlignment(Qt.AlignCenter)
+                self.itemAngleMoyenne.setFlags(Qt.ItemIsSelectable)
+                if poste == 3:
+                    self.table.setItem(0, 2, self.itemAngleMoyenne)
+                elif poste == 2:
+                    self.table.setItem(2, 2, self.itemAngleMoyenne)
+                else:
+                    self.table.setItem(1, 2, self.itemAngleMoyenne)
 
-                            if r is not None:
-                                self.lcdVolume.display(r)
-                                self.lcdNombreGodets.display(j)
-                                som = som + r
-                                moyenne = som / (j - 1)
-                                self.lcdRendementMoyen.display(moyenne)
-                                self.itemVolume = QTableWidgetItem(str(r))
-                                self.itemVolume.setTextAlignment(Qt.AlignCenter)
-                                self.itemVolume.setFlags(Qt.ItemIsSelectable)
-                                self.itemRendement = QTableWidgetItem(str(moyenne))
-                                self.itemRendement.setTextAlignment(Qt.AlignCenter)
-                                self.itemRendement.setFlags(Qt.ItemIsSelectable)
-                                if poste == 3:
-                                    self.table.setItem(0, 0, self.itemVolume)
-                                    self.table.setItem(0, 1, self.itemRendement)
-                                elif poste == 2:
-                                    self.table.setItem(2, 0, self.itemVolume)
-                                    self.table.setItem(2, 1, self.itemRendement)
-                                else:
-                                    self.table.setItem(1, 0, self.itemVolume)
-                                    self.table.setItem(1, 1, self.itemRendement)
+            if r is not None:
+                self.lcdVolume.display(r)
+                self.lcdNombreGodets.display(j)
+                som = som + r
+                moyenne = som / (j - 1)
+                self.lcdRendementMoyen.display(moyenne)
+                self.itemVolume = QTableWidgetItem(str(r))
+                self.itemVolume.setTextAlignment(Qt.AlignCenter)
+                self.itemVolume.setFlags(Qt.ItemIsSelectable)
+                self.itemRendement = QTableWidgetItem(str(moyenne))
+                self.itemRendement.setTextAlignment(Qt.AlignCenter)
+                self.itemRendement.setFlags(Qt.ItemIsSelectable)
+                if poste == 3:
+                    self.table.setItem(0, 0, self.itemVolume)
+                    self.table.setItem(0, 1, self.itemRendement)
+                elif poste == 2:
+                    self.table.setItem(2, 0, self.itemVolume)
+                    self.table.setItem(2, 1, self.itemRendement)
+                else:
+                    self.table.setItem(1, 0, self.itemVolume)
+                    self.table.setItem(1, 1, self.itemRendement)
 
-                            QApplication.processEvents()
-                            time.sleep(1)
+            QApplication.processEvents()
+            time.sleep(1)
 
 
     def updateTime(self, timeInterval):
